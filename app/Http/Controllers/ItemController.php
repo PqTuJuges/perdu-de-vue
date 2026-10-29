@@ -56,6 +56,26 @@ class ItemController extends Controller
         return view('items.show', ['item' => $item]);
     }
 
+    public function edit(Item $item)
+    {
+        $item->load('tags');
+
+        return view('items.edit', [
+            'item' => $item,
+            'places' => Place::orderBy('name')->get(),
+            'tags' => Tag::orderBy('name')->get(),
+        ]);
+    }
+
+    public function update(ItemRequest $request, Item $item)
+    {
+        $item->update($request->safe()->except('tags'));
+        $item->tags()->sync($request->validated('tags', []));
+
+        return redirect()->route('items.show', $item)
+            ->with('status', "L'objet a été modifié.");
+    }
+
     public function return(Item $item)
     {
         if ($item->isReturned()) {

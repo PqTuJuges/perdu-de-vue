@@ -16,7 +16,7 @@ class ItemSeeder extends Seeder
     public function run(): void
     {
         $places = Place::all()->keyBy('name');
-        $tags = Tag::all()->keyBy('name');
+        $tags = Tag::all();
 
         $items = [
             [
@@ -161,7 +161,7 @@ class ItemSeeder extends Seeder
                 Arr::except($data, ['place', 'tags'])
             );
 
-            $item->tags()->attach($tags->only($data['tags'])->pluck('id'));
+            $item->tags()->attach($tags->whereIn('name', $data['tags'])->pluck('id'));
         }
     }
 }
