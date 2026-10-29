@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Enums\Color;
+use App\Http\Requests\ItemRequest;
 use App\Models\Item;
 use App\Models\Place;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 
 class ItemController extends Controller
@@ -27,6 +29,24 @@ class ItemController extends Controller
             'selectedPlace' => $placeId,
             'selectedColor' => $color,
         ]);
+    }
+
+    public function create()
+    {
+        return view('items.create', [
+            'item' => new Item,
+            'places' => Place::orderBy('name')->get(),
+            'tags' => Tag::orderBy('name')->get(),
+        ]);
+    }
+
+    public function store(ItemRequest $request)
+    {
+        $item = Item::create($request->safe()->except('tags'));
+        $item->tags()->attach($request->validated('tags', []));
+
+        return redirect()->route('items.show', $item)
+            ->with('status', "L'objet a été ajouté.");
     }
 
     public function show(Item $item)
