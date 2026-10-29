@@ -16,4 +16,13 @@ enum PlaceKind: string
             self::Train => 'Train',
         };
     }
+
+    public function badgeClasses(): string
+    {
+        return match ($this) {
+            self::Hall => 'bg-sky-50 text-sky-800',
+            self::Platform => 'bg-amber-50 text-amber-900',
+            self::Train => 'bg-orange-50 text-orange-800',
+        };
+    }
 }
