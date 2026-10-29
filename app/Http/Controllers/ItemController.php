@@ -28,4 +28,32 @@ class ItemController extends Controller
             'selectedColor' => $color,
         ]);
     }
+
+    public function show(Item $item)
+    {
+        $item->load(['place', 'tags']);
+
+        return view('items.show', ['item' => $item]);
+    }
+
+    public function return(Item $item)
+    {
+        if ($item->isReturned()) {
+            return redirect()->route('items.show', $item)
+                ->with('status', 'Cet objet a déjà été restitué le '.$item->returned_at->format('d/m/Y').'.');
+        }
+
+        $item->update(['returned_at' => today()]);
+
+        return redirect()->route('items.show', $item)
+            ->with('status', '« '.$item->name.' » a retrouvé son propriétaire.');
+    }
+
+    public function destroy(Item $item)
+    {
+        $item->delete();
+
+        return redirect()->route('items.index')
+            ->with('status', "L'objet a été supprimé.");
+    }
 }
